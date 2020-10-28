@@ -8,9 +8,11 @@ var box1, pig1,pig3;
 var backgroundImg,platform;
 var bird, slingshot;
 
-var gameState = "onSling";
+
 var bg = "sprites/bg1.png";
 var score = 0;
+var birdAngle=0;
+var gameState="PLAY";
 
 function preload() {
     getBackgroundImg();
@@ -18,6 +20,7 @@ function preload() {
 
 function setup(){
     var canvas = createCanvas(1200,400);
+    canvas.position(15,70); 
     engine = Engine.create();
     world = engine.world;
 
@@ -78,24 +81,37 @@ function draw(){
     platform.display();
     //log6.display();
     slingshot.display();    
+
+if(birdAngle==1){
+Matter.Body.setAngle(bird.body,0);
+}
+
+
 }
 
 function mouseDragged(){
-    //if (gameState!=="launched"){
+    if (gameState=="PLAY"){
         Matter.Body.setPosition(bird.body, {x: mouseX , y: mouseY});
-    //}
+    }
+
 }
 
 
 function mouseReleased(){
     slingshot.fly();
-    gameState = "launched";
+    gameState = "END";
+birdAngle=0;
+
 }
 
 function keyPressed(){
-    if(keyCode === 32){
-       slingshot.attach(bird.body);
-    }
+    if(keyCode === 32&&bird.body.speed<1.5){
+     Matter.Body.setPosition(bird.body, {x: 200 , y: 50});
+    slingshot.attach(bird.body);
+    bird.trajectory=[];
+   birdAngle=1;
+gameState="PLAY";
+}
 }
 
 async function getBackgroundImg(){
